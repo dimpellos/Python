@@ -73,21 +73,21 @@ import curses
 
 s = curses.initscr()
 curses.curs_set(0)
-sh, sw = s.getmaxyx()
-w = curses.newwin(sh, sw, 0, 0)
+screen_height, screen_width = s.getmaxyx()
+w = curses.newwin(screen_height, screen_width, 0, 0)
 w.keypad(1)
 w.timeout(100)
 
-snk_x = sw/4
-snk_y = sh/2
+snake_x = screen_width // 4
+snake_y = screen_height // 2
 snake = [
-    [snk_y, snk_x],
-    [snk_y, snk_x-1],
-    [snk_y, snk_x-2]
+    [snake_y, snake_x],
+    [snake_y, snake_x - 1],
+    [snake_y, snake_x - 2]
 ]
 
-food = [sh/2, sw/2]
-w.addch(int (food[0]), int (food[1]), curses.ACS_DIAMOND)
+food = [screen_height // 2, screen_width // 2]
+w.addch(int(food[0]), int(food[1]), curses.ACS_DIAMOND)
 
 key = curses.KEY_RIGHT
 
@@ -95,8 +95,9 @@ while True:
     next_key = w.getch()
     key = key if next_key == -1 else next_key
 
-    if snake[0][0] in [0, sh] or snake[0][1] in [0, sw] or snake[0] in snake[1:]:
+    if snake[0][0] in [0, screen_height] or snake[0][1] in [0, screen_width] or snake[0] in snake[1:]:
         curses.endwin()
+        w.keypad(False)
         print("Snake length was " + str(len(snake)))
         quit()
 
@@ -117,12 +118,12 @@ while True:
         food = None
         while food is None:
             nf = [
-                random.randint(1, sh-1),
-                random.randint(1, sw-1)
+                random.randint(1, screen_height - 1),
+                random.randint(1, screen_width - 1)
             ]
             food = nf if nf not in snake[0:] else None
             try:
-                w.addch(int (food[0]),int (food[1]), curses.ACS_DIAMOND)
+                w.addch(int(food[0]),int(food[1]), curses.ACS_DIAMOND)
             except:
                 pass
     else:
@@ -134,5 +135,6 @@ while True:
 
     except:
         curses.endwin()
+        w.keypad(False)
         print("Snake length was " + str(len(snake)))
         quit()

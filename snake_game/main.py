@@ -2,7 +2,7 @@ from turtle import Screen
 from snake import Snake
 from food import Food
 from scoreboard import Scoreboard
-from constants import COLLISION_DISTANCE
+from constants import COLLISION_FOOD, COLLISION_BORDER, COLLISION_TAIL
 import time
 
 
@@ -31,14 +31,20 @@ while gameIsOn:
     snake.move()
 
     # Snake Collision with food
-    if snake.head.distance(food) < COLLISION_DISTANCE:
-        # TODO: delete food
-        # create new food
+    if snake.head.distance(food) < COLLISION_FOOD:
         food.refresh()
-        # score
+        snake.extend()
         scoreboard.increase_score()
-        # TODO: make snake bigger
 
+    # Snake collision with borders
+    if snake.head.xcor() > COLLISION_BORDER or snake.head.xcor() < -COLLISION_BORDER or snake.head.ycor() > COLLISION_BORDER or snake.head.ycor() < -COLLISION_BORDER:
+        gameIsOn = False
+        scoreboard.game_over()
 
+    # Snake collision with its tail
+    for segment in snake.segments[1:]:
+        if snake.head.distance(segment) < COLLISION_TAIL:
+            gameIsOn = False
+            scoreboard.game_over()
 
 screen.exitonclick()
